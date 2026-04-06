@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#090E1A;color-scheme:dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Argus — The Operating System for European Investment Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#090E1A;color:#E0E8F4;font-family:'Source Serif 4',Georgia,serif;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(184,130,30,.2)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:#090E1A}
+::-webkit-scrollbar-thumb{background:#1E3050}
+
+/* ── TOKENS ────────────────────────────────────── */
+:root{
+  --bg:#090E1A; --bg2:#0D1525; --bg3:#111D31; --bg4:#060C18;
+  --card:#111D31; --card2:#162035; --bdr:#1A2A40; --bdr2:#243550;
+  --text:#E0E8F4; --sub:#7A90B0; --muted:#3A5272;
+  --amber:#B8821E; --ambl:#D4971F; --ambd:rgba(184,130,30,.1);
+  --green:#10C27A; --red:#F05252; --navy4:#060C18;
+}
+
+/* ── TYPE ──────────────────────────────────────── */
+.disp{font-family:'Playfair Display',Georgia,serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+.tag{display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:22px;opacity:.85}
+.tag::before{content:'';display:block;width:18px;height:1px;background:var(--amber);flex-shrink:0;opacity:.6}
+
+/* ── NAV ───────────────────────────────────────── */
+#nav{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 56px;border-bottom:1px solid transparent;transition:background .3s,border-color .3s}
+#nav.up{background:rgba(9,14,26,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:var(--bdr)}
+.logo{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:.05em;color:var(--text);text-decoration:none}
+.nav-l{display:flex;gap:32px}
+.nav-l a{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);text-decoration:none;transition:color .2s}
+.nav-l a:hover{color:var(--text)}
+.nav-cta{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;background:var(--amber);color:#060C18;border:none;padding:10px 22px;cursor:pointer;transition:background .2s}
+.nav-cta:hover{background:var(--ambl)}
+
+/* ── HERO ──────────────────────────────────────── */
+.hero{min-height:100vh;padding:120px 56px 80px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;position:relative;overflow:hidden;background:#090E1A}
+.hero-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 55% 60% at 75% 35%,rgba(184,130,30,.07) 0%,transparent 65%),radial-gradient(ellipse 40% 50% at 12% 70%,rgba(79,130,220,.05) 0%,transparent 60%)}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 65% 45%,black,transparent)}
+.hero-left{position:relative;z-index:2}
+.countdown-pill{display:inline-flex;align-items:center;gap:10px;background:rgba(16,194,122,.08);border:1px solid rgba(16,194,122,.2);padding:7px 16px;margin-bottom:26px}
+.cp-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:lp 1.2s ease-in-out infinite;flex-shrink:0}
+.cp-txt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,.6)}
+.cp-time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--green);font-weight:500}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.25}}
+.h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(44px,5vw,74px);font-weight:400;line-height:1.04;letter-spacing:-.025em;color:var(--text);margin-bottom:10px}
+.h1 em{font-style:italic;color:var(--amber)}
+.h1-sub{font-family:'Playfair Display',Georgia,serif;font-size:clamp(18px,2vw,24px);font-style:italic;font-weight:300;color:var(--sub);margin-bottom:24px}
+.hero-p{font-size:16px;color:var(--sub);max-width:430px;line-height:1.85;margin-bottom:40px}
+.hero-p strong{color:var(--text);font-weight:500}
+.btns{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.btn-p{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;background:var(--amber);color:#060C18;border:none;padding:15px 34px;cursor:pointer;transition:background .2s,transform .15s;display:inline-flex;align-items:center;gap:10px}
+.btn-p:hover{background:var(--ambl);transform:translateY(-1px)}
+.btn-p svg{transition:transform .2s}
+.btn-p:hover svg{transform:translateX(3px)}
+.btn-g{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);background:none;border:1px solid var(--bdr);padding:15px 24px;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-g:hover{border-color:var(--sub);color:var(--text)}
+.hero-kpis{display:flex;gap:40px;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:1px solid var(--bdr)}
+.hk-n{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:500;color:var(--text);line-height:1;margin-bottom:4px}
+.hk-n sup{font-size:14px;color:var(--amber)}
+.hk-l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* ── TERMINAL ──────────────────────────────────── */
+.hero-right{position:relative;z-index:2}
+.tglow{position:absolute;inset:24px -16px -24px 16px;background:rgba(184,130,30,.07);filter:blur(40px);border-radius:4px;pointer-events:none}
+.term{background:var(--navy4);border:1px solid var(--bdr2);box-shadow:0 32px 90px rgba(0,0,0,.7);position:relative;overflow:hidden}
+.term::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--amber) 30%,var(--ambl) 50%,var(--amber) 70%,transparent)}
+.tbar{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(0,0,0,.3)}
+.tdots{display:flex;gap:7px}
+.tdots span{width:10px;height:10px;border-radius:50%}
+.tdots span:nth-child(1){background:#FF5F57;opacity:.65}
+.tdots span:nth-child(2){background:#FEBC2E;opacity:.65}
+.tdots span:nth-child(3){background:#28C840;opacity:.65}
+.tlbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.06em}
+.tlive{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#28C840;letter-spacing:.1em}
+.tlive-d{width:5px;height:5px;border-radius:50%;background:#28C840;animation:lp .9s infinite}
+.tbody{padding:20px}
+.tts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.12em;margin-bottom:10px}
+.tgt{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:16px;color:rgba(255,255,255,.88);margin-bottom:18px;line-height:1.4}
+.tsec{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:5px;margin-bottom:9px;margin-top:14px}
+.trow{display:grid;grid-template-columns:48px 1fr 52px;gap:9px;align-items:start;padding:8px 10px;background:rgba(255,255,255,.03);border-left:2px solid transparent;margin-bottom:4px}
+.trow.g{border-left-color:#28C840}.trow.r{border-left-color:#F05252}.trow.a{border-left-color:var(--amber)}
+.ttk{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:rgba(255,255,255,.88);padding-top:2px}
+.ttxt{font-size:11px;color:rgba(255,255,255,.4);line-height:1.5}
+.tchg{font-family:'IBM Plex Mono',monospace;font-size:10px;text-align:right;padding-top:2px}
+.tchg.u{color:#28C840}.tchg.d{color:#F05252}.tchg.n{color:var(--amber)}
+.tprio{background:var(--ambd);border:1px solid rgba(184,130,30,.2);padding:12px 13px;margin-top:12px}
+.tplbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:7px}
+.tptxt{font-size:11px;color:rgba(255,255,255,.5);line-height:1.7}
+.tcur{display:inline-block;width:7px;height:13px;background:var(--amber);vertical-align:middle;animation:blink .75s step-end infinite;margin-left:1px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── TICKER ────────────────────────────────────── */
+.ticker{background:var(--navy4);height:36px;display:flex;align-items:center;overflow:hidden;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid var(--bdr)}
+.ticker-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);padding:0 20px;flex-shrink:0;border-right:1px solid var(--bdr);height:100%;display:flex;align-items:center}
+.ticker-scroll{display:flex;align-items:center;animation:tmv 44s linear infinite;white-space:nowrap;flex:1}
+@keyframes tmv{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{display:flex;align-items:center;gap:8px;padding:0 26px;font-family:'IBM Plex Mono',monospace;font-size:11px;border-right:1px solid rgba(255,255,255,.04)}
+.ti-n{color:rgba(255,255,255,.3)}.ti-v{color:rgba(255,255,255,.75)}
+.ti-u{color:#28C840;font-size:10px}.ti-d{color:#F05252;font-size:10px}.ti-a{color:var(--amber);font-size:10px}
+
+/* ── PROOF BAR ─────────────────────────────────── */
+.proof{background:var(--bg2);border-bottom:1px solid var(--bdr);padding:24px 56px;display:flex;align-items:center}
+.proof-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;flex-shrink:0;padding-right:36px;margin-right:36px;border-right:1px solid var(--bdr)}
+.proof-stats{display:flex;flex:1}
+.ps{flex:1;padding:0 32px;border-right:1px solid var(--bdr)}
+.ps:last-child{border-right:none}
+.ps-n{font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:500;color:var(--text);line-height:1;margin-bottom:4px}
+.ps-l{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
+
+/* ── SECTIONS ──────────────────────────────────── */
+.sec{padding:96px 56px}
+.bg1{background:var(--bg)}.bg2{background:var(--bg2)}.bg4{background:var(--bg4)}
+.sh2{font-family:'Playfair Display',Georgia,serif;font-size:clamp(32px,3.8vw,52px);font-weight:400;line-height:1.08;letter-spacing:-.022em;color:var(--text);margin-bottom:14px}
+.sh2 em{font-style:italic;color:var(--amber)}
+.sp{font-size:16px;color:var(--sub);max-width:520px;line-height:1.85}
+
+/* ── PROBLEM ───────────────────────────────────── */
+.prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;margin-top:60px}
+.prob-p p{font-size:15px;color:var(--sub);line-height:1.9;margin-bottom:18px}
+.prob-p p strong{color:var(--text);font-weight:500}
+.ph{font-style:normal;background:rgba(184,130,30,.1);color:var(--amber);padding:1px 5px;font-family:'IBM Plex Mono',monospace;font-size:13px}
+.mtbl{border:1px solid var(--bdr);overflow:hidden;background:var(--card)}
+.mth{display:grid;grid-template-columns:88px 1fr;background:var(--navy4);padding:10px 18px;gap:16px}
+.mthc{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mtr{display:grid;grid-template-columns:88px 1fr;gap:16px;padding:12px 18px;border-bottom:1px solid var(--bdr);transition:background .2s}
+.mtr:hover{background:var(--card2)}.mtr:last-child{border-bottom:none;background:rgba(16,194,122,.05)}
+.mtr-t{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber)}
+.mtr:last-child .mtr-t{color:var(--green)}
+.mtr-a{font-size:13px;color:var(--sub);line-height:1.4}
+.mtr:last-child .mtr-a{color:var(--green);font-weight:500}
+.kpis{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.kpi{background:var(--card);border:1px solid var(--bdr);padding:22px 26px;position:relative;overflow:hidden;transition:transform .2s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+.kpi-n{font-family:'Playfair Display',Georgia,serif;font-size:44px;font-weight:500;color:var(--text);line-height:1;margin-bottom:7px}
+.kpi-n sup{font-size:20px;color:var(--amber)}
+.kpi-l{font-size:13px;color:var(--muted);font-style:italic;line-height:1.5}
+
+/* ── 8 MODULE CARDS ────────────────────────────── */
+.modules-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:56px;border:1px solid var(--bdr)}
+.mod-card{padding:32px 28px;border-right:1px solid var(--bdr);border-bottom:1px solid var(--bdr);background:var(--card);cursor:pointer;transition:background .25s;position:relative;overflow:hidden}
+.mod-card:hover{background:var(--card2)}
+.mod-card.active{background:rgba(184,130,30,.08);border-color:var(--amber)}
+.mod-card:nth-child(4n){border-right:none}
+.mod-card:nth-child(n+5){border-bottom:none}
+.mod-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--amber);letter-spacing:.1em;margin-bottom:18px}
+
+.mod-title{font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:500;color:var(--text);margin-bottom:8px;line-height:1.25}
+.mod-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.mod-card.active .mod-title{color:var(--amber)}
+.mod-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--amber);transform:scaleX(0);transition:transform .25s;transform-origin:left}
+.mod-card.active::after,.mod-card:hover::after{transform:scaleX(1)}
+
+/* Module detail panel */
+.mod-panel{display:none;margin-top:0;border:1px solid var(--bdr);border-top:none}
+.mod-panel.on{display:grid;grid-template-columns:1fr 1.15fr;gap:0}
+.mpd{padding:48px;border-right:1px solid var(--bdr);background:var(--bg2)}
+.mpd-h{font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:500;color:var(--text);margin-bottom:12px;letter-spacing:-.018em}
+.mpd-h em{font-style:italic;color:var(--amber)}
+.mpd-p{font-size:15px;color:var(--sub);line-height:1.85;margin-bottom:14px}
+.feat-list{list-style:none;margin-top:24px}
+.feat-list li{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--bdr);font-size:14px;color:var(--sub);line-height:1.45}
+.feat-list li:last-child{border-bottom:none}
+.feat-list li::before{content:'';width:16px;height:16px;flex-shrink:0;margin-top:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 8l4 4 8-8' stroke='%23B8821E' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:contain;background-repeat:no-repeat}
+.mpm{padding:48px;background:var(--bg)}
+
+/* ── MOCK CARDS ────────────────────────────────── */
+.mock{background:var(--navy4);border:1px solid var(--bdr2);box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative;overflow:hidden}
+.mock::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.mock-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 15px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.05)}
+.mock-dots{display:flex;gap:6px}
+.mock-dots span{width:9px;height:9px;border-radius:50%}
+.mock-dots span:nth-child(1){background:#FF5F57;opacity:.6}
+.mock-dots span:nth-child(2){background:#FEBC2E;opacity:.6}
+.mock-dots span:nth-child(3){background:#28C840;opacity:.6}
+.mock-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.06em}
+.mock-st{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#28C840;display:flex;align-items:center;gap:4px}
+.mock-std{width:5px;height:5px;border-radius:50%;background:#28C840;animation:lp .9s infinite}
+.mock-body{padding:18px}
+/* Generic mock rows */
+.mr{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.12em;margin-bottom:8px;margin-top:14px;text-transform:uppercase}
+.mrow{display:flex;align-items:flex-start;gap:9px;padding:8px 9px;background:rgba(255,255,255,.03);border-left:2px solid transparent;margin-bottom:4px}
+.mrow.g{border-left-color:#28C840}.mrow.r{border-left-color:#F05252}.mrow.a{border-left-color:var(--amber)}
+.mk{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:rgba(255,255,255,.88);width:44px;flex-shrink:0}
+.mi{flex:1}
+.mc{font-family:'IBM Plex Mono',monospace;font-size:10px;margin-bottom:2px}
+.mc.u{color:#28C840}.mc.d{color:#F05252}.mc.n{color:var(--amber)}
+.mt{font-size:11px;color:rgba(255,255,255,.4);line-height:1.45}
+.mprio{background:rgba(184,130,30,.08);border:1px solid rgba(184,130,30,.18);padding:11px 13px;margin-top:11px}
+.mprio-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.mprio-t{font-size:11px;color:rgba(255,255,255,.5);line-height:1.7}
+
+/* CIM mock */
+.cim-step{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.cim-step:last-child{border-bottom:none}
+.cim-idx{width:24px;height:24px;border-radius:50%;background:var(--ambd);border:1px solid rgba(184,130,30,.3);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);flex-shrink:0;margin-top:2px}
+.cim-head{font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.7);margin-bottom:4px;font-weight:500}
+.cim-val{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5}
+.cim-flag{display:inline-flex;align-items:center;gap:6px;background:rgba(240,82,82,.1);border:1px solid rgba(240,82,82,.2);padding:3px 10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#F05252;margin-top:5px}
+
+/* Chat mock */
+.chat-body{padding:16px;display:flex;flex-direction:column;gap:11px}
+.msg{display:flex;gap:9px;align-items:flex-start}
+.msg-av{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.msg-av.y{background:rgba(255,255,255,.06);color:rgba(255,255,255,.35);font-family:'IBM Plex Mono',monospace}
+.msg-av.a{background:var(--amber);color:#060C18;font-family:'Playfair Display',Georgia,serif;font-size:11px;font-weight:700}
+.msg-b{flex:1}
+.msg-w{font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-bottom:4px;letter-spacing:.08em}
+.msg-t{background:rgba(255,255,255,.03);padding:10px 12px;font-size:12px;color:rgba(255,255,255,.75);line-height:1.6}
+.msg.a .msg-t{background:rgba(184,130,30,.08);border-left:2px solid var(--amber)}
+.msg-src{font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);margin-top:4px;letter-spacing:.02em}
+.chat-inp{border-top:1px solid rgba(255,255,255,.05);padding:11px 15px;display:flex;gap:9px;background:rgba(0,0,0,.15)}
+.chat-fake{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.18)}
+.chat-snd{background:var(--amber);border:none;padding:8px 14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#060C18;cursor:pointer;font-weight:500;transition:background .2s;white-space:nowrap}
+.chat-snd:hover{background:var(--ambl)}
+
+/* Covenant table mock */
+.cov-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1.2fr;border-bottom:1px solid rgba(255,255,255,.06);padding:9px 14px;align-items:center}
+.cov-hdr{background:rgba(0,0,0,.3)}
+.cov-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.08em;text-transform:uppercase}
+.cov-val{font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,.8)}
+.cov-ok{color:#28C840}.cov-warn{color:#FEBC2E}.cov-bad{color:#F05252}
+.cov-badge{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 9px}
+.cov-badge.ok{background:rgba(16,194,122,.1);color:#28C840}
+.cov-badge.warn{background:rgba(254,188,46,.1);color:#FEBC2E}
+.breach-alert{margin:12px;background:rgba(240,82,82,.06);border:1px solid rgba(240,82,82,.2);padding:12px 14px}
+.ba-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#F05252;margin-bottom:5px}
+.ba-t{font-size:12px;color:rgba(255,255,255,.6);line-height:1.6}
+
+/* LP report mock */
+.lp-section{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.lp-company{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.lp-narrative{font-size:12px;color:rgba(255,255,255,.55);line-height:1.65}
+.lp-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid rgba(255,255,255,.06);margin-top:10px}
+.lp-kpi{padding:8px 12px;border-right:1px solid rgba(255,255,255,.06);text-align:center}
+.lp-kpi:last-child{border-right:none}
+.lp-kpi-v{font-family:'IBM Plex Mono',monospace;font-size:14px;color:rgba(255,255,255,.8);margin-bottom:2px}
+.lp-kpi-l{font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.08em}
+
+/* ── DATA SOURCES ──────────────────────────────── */
+.ds-card{background:var(--card);border:1px solid var(--bdr);overflow:hidden}
+.ds-top{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:var(--navy4);border-bottom:1px solid var(--bdr)}
+.ds-top span:first-child{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.05em}
+.ds-row{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--bdr);transition:background .2s}
+.ds-row:last-child{border-bottom:none}
+.ds-row:hover{background:var(--card2)}
+.ds-l{display:flex;align-items:center;gap:12px}
+.ds-flag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--amber);letter-spacing:.06em;width:28px;flex-shrink:0;text-align:center}
+.ds-name{font-size:14px;color:var(--text);font-weight:500;margin-bottom:1px}
+.ds-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
+.ds-r{display:flex;gap:6px}
+.dbadge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px}
+.db-live{background:rgba(16,194,122,.1);color:var(--green)}
+.db-nat{background:rgba(184,130,30,.1);color:var(--amber)}
+.db-rt{background:rgba(255,255,255,.04);color:var(--muted)}
+
+/* ── ROI CALCULATOR ────────────────────────────── */
+.roi-box{max-width:760px;background:var(--card);border:1px solid var(--bdr);margin-top:52px;overflow:hidden}
+.roi-header{background:var(--navy4);padding:18px 30px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px}
+.roi-icon{width:34px;height:34px;background:var(--ambd);border:1px solid rgba(184,130,30,.2);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--amber);letter-spacing:.06em;font-weight:500}
+.roi-hl{font-family:'Playfair Display',Georgia,serif;font-size:17px;font-weight:500;color:var(--text)}
+.roi-hs{font-size:13px;color:var(--sub);font-style:italic}
+.roi-body{padding:28px 30px}
+.roi-sliders{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:28px}
+.roi-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block}
+.roi-slider{width:100%;-webkit-appearance:none;appearance:none;height:3px;background:var(--bdr2);outline:none;cursor:pointer}
+.roi-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--amber);cursor:pointer;border-radius:50%}
+.roi-slider::-moz-range-thumb{width:18px;height:18px;background:var(--amber);cursor:pointer;border-radius:50%;border:none}
+.roi-val{font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:500;color:var(--text);line-height:1;margin-top:9px}
+.roi-val span{font-size:14px;color:var(--sub);font-family:'IBM Plex Mono',monospace}
+.roi-results{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--bdr)}
+.roi-r{padding:18px 22px;border-right:1px solid var(--bdr)}
+.roi-r:last-child{border-right:none}
+.roi-r-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.roi-r-val{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:500;color:var(--text);line-height:1;margin-bottom:3px}
+.roi-r-sub{font-size:12px;color:var(--sub);font-style:italic}
+.roi-r.hi .roi-r-val{color:var(--green)}
+
+/* ── COMPARISON ────────────────────────────────── */
+.ctbl{border:1px solid var(--bdr);overflow:hidden;margin-top:52px}
+.crow{display:grid;grid-template-columns:2fr repeat(5,1fr);border-bottom:1px solid var(--bdr)}
+.crow:last-child{border-bottom:none}
+.cc{padding:13px 15px;font-size:13px;color:var(--sub);border-right:1px solid var(--bdr);background:var(--bg2)}
+.cc:last-child{border-right:none}
+.cc.hdr{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--navy4)}
+.cc.hdr.a{background:rgba(184,130,30,.1);color:var(--amber);border-top:2px solid var(--amber)}
+.cc.ag{background:rgba(184,130,30,.04)}
+.iy{color:var(--green);font-size:14px}.in{color:var(--bdr2);font-size:14px}.im{color:var(--amber);font-size:13px}
+
+/* ── PRICING ───────────────────────────────────── */
+.pg{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bdr);margin-top:52px;overflow:hidden}
+.pc{padding:34px 28px;border-right:1px solid var(--bdr);background:var(--card);position:relative;transition:background .2s}
+.pc:hover{background:var(--card2)}.pc:last-child{border-right:none}
+.pc.hot{background:var(--navy4)}.pc.hot:hover{background:#0A1222}
+.pc.hot::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber)}
+.pc-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:rgba(184,130,30,.1);color:var(--amber);padding:3px 10px;display:inline-block;margin-bottom:16px}
+.pc-tier{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.pc-price{font-family:'Playfair Display',Georgia,serif;font-size:42px;font-weight:500;color:var(--text);line-height:1;margin-bottom:4px}
+.pc-price span{font-size:16px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.pc-per{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:22px}
+.pc-ul{list-style:none;margin-bottom:22px}
+.pc-ul li{font-size:12px;color:var(--sub);padding:8px 0;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-start;gap:9px;line-height:1.4}
+.pc-ul li:last-child{border-bottom:none}
+.pc-ul li::before{content:'→';color:var(--amber);font-family:'IBM Plex Mono',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
+.pc-ul li.dim{color:var(--muted)}.pc-ul li.dim::before{content:'–';color:var(--bdr2)}
+.pc-btn{width:100%;padding:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1px solid var(--bdr);color:var(--muted);transition:all .2s}
+.pc-btn:hover{border-color:var(--sub);color:var(--text)}
+.pc.hot .pc-btn{background:var(--amber);border-color:var(--amber);color:#060C18;font-weight:500}
+.pc.hot .pc-btn:hover{background:var(--ambl)}
+
+/* ── FAQ ───────────────────────────────────────── */
+.faq{margin-top:52px;border:1px solid var(--bdr);overflow:hidden}
+.faq-item{border-bottom:1px solid var(--bdr)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:20px 26px;cursor:pointer;transition:background .2s;background:var(--card);user-select:none}
+.faq-q:hover{background:var(--card2)}
+.faq-qt{font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:500;color:var(--text);padding-right:22px;line-height:1.3}
+.faq-ic{width:26px;height:26px;flex-shrink:0;background:rgba(184,130,30,.1);border:1px solid rgba(184,130,30,.2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--amber);font-weight:300;transition:transform .3s;line-height:1}
+.faq-item.open .faq-ic{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;background:var(--bg2);transition:max-height .35s ease,padding .35s ease;padding:0 26px}
+.faq-item.open .faq-a{max-height:260px;padding:18px 26px}
+.faq-a p{font-size:15px;color:var(--sub);line-height:1.85}
+
+/* ── WAITLIST ──────────────────────────────────── */
+.wl-sec{background:var(--navy4);border-top:1px solid var(--bdr);padding:110px 56px;text-align:center;position:relative;overflow:hidden}
+.wl-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(184,130,30,.07) 0%,transparent 65%);pointer-events:none}
+.wl-inner{position:relative;z-index:2;max-width:560px;margin:0 auto}
+.wl-form{display:flex;max-width:480px;margin:40px auto 0;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.wl-email{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--bdr2);border-right:none;padding:15px 20px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text);outline:none;transition:border-color .2s,background .2s}
+.wl-email::placeholder{color:var(--muted)}
+.wl-email:focus{background:rgba(255,255,255,.08);border-color:rgba(184,130,30,.4)}
+.wl-btn{background:var(--amber);border:1px solid var(--amber);padding:15px 26px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#060C18;cursor:pointer;font-weight:500;white-space:nowrap;transition:background .2s}
+.wl-btn:hover{background:var(--ambl)}
+.wl-note{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:12px;letter-spacing:.04em}
+.wl-ok{display:none;font-family:'Playfair Display',Georgia,serif;font-size:22px;font-style:italic;color:var(--amber);margin-top:32px}
+
+/* ── FOOTER ────────────────────────────────────── */
+footer{background:#060C18;border-top:1px solid var(--bdr);padding:52px 56px 36px}
+.footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:48px;padding-bottom:44px;border-bottom:1px solid var(--bdr)}
+.footer-brand .logo{display:block;margin-bottom:14px}
+.footer-brand p{font-size:14px;color:var(--muted);line-height:1.75;max-width:230px}
+.fc-head{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:16px;display:block}
+.fc-ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.fc-ul a{font-size:14px;color:var(--sub);text-decoration:none;transition:color .2s}
+.fc-ul a:hover{color:var(--text)}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;padding-top:28px;flex-wrap:wrap;gap:16px}
+.footer-copy{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em}
+.footer-legal{display:flex;gap:22px}
+.footer-legal a{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-legal a:hover{color:var(--sub)}
+
+/* ── REVEAL ────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.rv.vis{opacity:1;transform:translateY(0)}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+
+/* ── RESPONSIVE ────────────────────────────────── */
+@media(max-width:1100px){
+  .hero{grid-template-columns:1fr;padding:120px 36px 60px;min-height:auto}
+  .hero-right{margin-top:36px}
+  .prob-grid,.mpd-grid{grid-template-columns:1fr}
+  .mod-panel.on{grid-template-columns:1fr}
+  .mpd{border-right:none;border-bottom:1px solid var(--bdr)}
+  .pg{grid-template-columns:1fr 1fr}
+  .pc{border-right:none;border-bottom:1px solid var(--bdr)}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .roi-sliders{grid-template-columns:1fr}
+  .roi-results{grid-template-columns:1fr}
+  .roi-r{border-right:none;border-bottom:1px solid var(--bdr)}
+  .roi-r:last-child{border-bottom:none}
+  .modules-grid{grid-template-columns:repeat(2,1fr)}
+  .mod-card:nth-child(2n){border-right:none}
+  section,.sec,#nav,.proof,.wl-sec,footer{padding-left:32px;padding-right:32px}
+  .crow{grid-template-columns:1.5fr repeat(3,1fr)}
+  .cc:nth-child(5),.cc:nth-child(6){display:none}
+}
+@media(max-width:768px){
+  .nav-l{display:none}
+  .proof-stats{flex-direction:column}
+  .ps{border-right:none;border-bottom:1px solid var(--bdr);padding:14px 0}
+  .ps:last-child{border-bottom:none}
+  footer{padding:36px 24px}
+  .footer-top{grid-template-columns:1fr}
+  .footer-bot{flex-direction:column;text-align:center}
+  .footer-legal{justify-content:center}
+  .pg{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body style="background:#090E1A;color:#E0E8F4">
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo">ARGUS</a>
+  <div class="nav-l">
+    <a href="#problem">Problem</a>
+    <a href="#platform">Platform</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <button class="nav-cta" onclick="goTo('waitlist')">Request Access</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-left">
+    <div class="tag rv">The Operating System for European Investment Management</div>
+    <div class="countdown-pill rv d1">
+      <span class="cp-dot"></span>
+      <span class="cp-txt">Next briefing in</span>
+      <span class="cp-time" id="cd">calculating...</span>
+    </div>
+    <h1 class="h1 disp rv d1">
+      Your AI analyst.<br><em>Working while<br>you sleep.</em>
+    </h1>
+    <p class="h1-sub disp rv d2">8 modules. 1 platform. The entire investment lifecycle.</p>
+    <p class="hero-p rv d2">
+      Argus is the first AI platform that covers every workflow an investment professional touches — from proactive morning intelligence to CIM analysis, covenant monitoring, and LP reporting. <strong>Built natively for European regulatory reality.</strong> Priced for mid-market funds, not bulge-bracket banks.
+    </p>
+    <div class="btns rv d3">
+      <button class="btn-p" onclick="goTo('waitlist')">
+        Request early access
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <a href="#platform" class="btn-g">Explore the platform</a>
+    </div>
+    <div class="hero-kpis">
+      <div class="rv d2"><div class="hk-n disp">44<sup>K</sup></div><div class="hk-l mono">EU UCITS funds</div></div>
+      <div class="rv d3"><div class="hk-n disp">0.01<sup>%</sup></div><div class="hk-l mono">use AI today</div></div>
+      <div class="rv d3"><div class="hk-n disp">8</div><div class="hk-l mono">integrated modules</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div style="position:relative">
+      <div class="tglow"></div>
+      <div class="term">
+        <div class="tbar">
+          <div class="tdots"><span></span><span></span><span></span></div>
+          <div class="tlbl">argus — morning briefing — 07:00 CET</div>
+          <div class="tlive"><span class="tlive-d"></span>LIVE</div>
+        </div>
+        <div class="tbody">
+          <div class="tts mono">TUESDAY · 7 APR 2026 · 07:00 CET</div>
+          <div class="tgt disp" id="hg">Good morning. 3 items require your attention today.<span class="tcur" id="hc"></span></div>
+          <div id="h1" style="display:none">
+            <div class="tsec mono">Portfolio — Overnight</div>
+            <div class="trow g"><div class="ttk mono">ASML</div><div class="ttxt">Q1 beat +8%. EUV intake €4.2B vs €3.8B exp. Approaching trim level €780.</div><div class="tchg u mono">+3.2%</div></div>
+            <div class="trow r"><div class="ttk mono">DSM</div><div class="ttxt">FY26 EBITDA guidance cut 12%. Nutrition miss. Q2 thesis contradicted — review.</div><div class="tchg d mono">−1.8%</div></div>
+            <div class="trow a"><div class="ttk mono">ADYEN</div><div class="ttxt">Pulled to €1,138 — inside your entry zone €1,100–1,150. Thesis intact.</div><div class="tchg n mono">Entry</div></div>
+          </div>
+          <div id="h2" style="display:none">
+            <div class="tprio">
+              <div class="tplbl mono">Priority for today</div>
+              <div class="tptxt">→ Review DSM — thesis breach likely<br>→ Adyen: entry conditions met<br>→ ASML: set trim alert at €780<br>→ ECB rate decision 14:00 CET</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-lbl mono">Markets</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-scroll">
+      <div class="ti mono"><span class="ti-n">AEX</span>&nbsp;<span class="ti-v">873.4</span>&nbsp;<span class="ti-u">+0.4%</span></div>
+      <div class="ti mono"><span class="ti-n">DAX</span>&nbsp;<span class="ti-v">18,420</span>&nbsp;<span class="ti-u">+0.6%</span></div>
+      <div class="ti mono"><span class="ti-n">CAC 40</span>&nbsp;<span class="ti-v">7,982</span>&nbsp;<span class="ti-d">−0.2%</span></div>
+      <div class="ti mono"><span class="ti-n">EURO STOXX 50</span>&nbsp;<span class="ti-v">4,871</span>&nbsp;<span class="ti-u">+0.3%</span></div>
+      <div class="ti mono"><span class="ti-n">ASML</span>&nbsp;<span class="ti-v">€743.20</span>&nbsp;<span class="ti-u">+3.2%</span></div>
+      <div class="ti mono"><span class="ti-n">DSM-F</span>&nbsp;<span class="ti-v">€82.60</span>&nbsp;<span class="ti-d">−1.8%</span></div>
+      <div class="ti mono"><span class="ti-n">ADYEN</span>&nbsp;<span class="ti-v">€1,138</span>&nbsp;<span class="ti-d">−0.4%</span></div>
+      <div class="ti mono"><span class="ti-n">EUR/USD</span>&nbsp;<span class="ti-v">1.0842</span>&nbsp;<span class="ti-u">+0.1%</span></div>
+      <div class="ti mono"><span class="ti-n">BEL 20</span>&nbsp;<span class="ti-v">3,640</span>&nbsp;<span class="ti-u">+0.2%</span></div>
+      <div class="ti mono"><span class="ti-n">ECB Rate</span>&nbsp;<span class="ti-v">3.40%</span>&nbsp;<span class="ti-a">Decision 14:00</span></div>
+      <div class="ti mono"><span class="ti-n">AEX</span>&nbsp;<span class="ti-v">873.4</span>&nbsp;<span class="ti-u">+0.4%</span></div>
+      <div class="ti mono"><span class="ti-n">DAX</span>&nbsp;<span class="ti-v">18,420</span>&nbsp;<span class="ti-u">+0.6%</span></div>
+      <div class="ti mono"><span class="ti-n">CAC 40</span>&nbsp;<span class="ti-v">7,982</span>&nbsp;<span class="ti-d">−0.2%</span></div>
+      <div class="ti mono"><span class="ti-n">EURO STOXX 50</span>&nbsp;<span class="ti-v">4,871</span>&nbsp;<span class="ti-u">+0.3%</span></div>
+      <div class="ti mono"><span class="ti-n">ASML</span>&nbsp;<span class="ti-v">€743.20</span>&nbsp;<span class="ti-u">+3.2%</span></div>
+      <div class="ti mono"><span class="ti-n">DSM-F</span>&nbsp;<span class="ti-v">€82.60</span>&nbsp;<span class="ti-d">−1.8%</span></div>
+      <div class="ti mono"><span class="ti-n">ADYEN</span>&nbsp;<span class="ti-v">€1,138</span>&nbsp;<span class="ti-d">−0.4%</span></div>
+      <div class="ti mono"><span class="ti-n">EUR/USD</span>&nbsp;<span class="ti-v">1.0842</span>&nbsp;<span class="ti-u">+0.1%</span></div>
+      <div class="ti mono"><span class="ti-n">BEL 20</span>&nbsp;<span class="ti-v">3,640</span>&nbsp;<span class="ti-u">+0.2%</span></div>
+      <div class="ti mono"><span class="ti-n">ECB Rate</span>&nbsp;<span class="ti-v">3.40%</span>&nbsp;<span class="ti-a">Decision 14:00</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROOF BAR -->
+<div class="proof">
+  <div class="proof-lbl mono">The market</div>
+  <div class="proof-stats">
+    <div class="ps"><div class="ps-n disp">44,000</div><div class="ps-l mono">EU UCITS funds</div></div>
+    <div class="ps"><div class="ps-n disp">0.01%</div><div class="ps-l mono">currently use AI</div></div>
+    <div class="ps"><div class="ps-n disp">8</div><div class="ps-l mono">automated modules</div></div>
+    <div class="ps"><div class="ps-n disp">€905M+</div><div class="ps-l mono">total TAM</div></div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="sec bg2" id="problem" style="border-top:1px solid var(--bdr)">
+  <div class="tag rv">The problem</div>
+  <h2 class="sh2 disp rv d1">Seven workflows.<br>All manual. All <em>broken.</em></h2>
+  <div class="prob-grid">
+    <div class="prob-p rv d1">
+      <p>A mid-market fund manager's working week is dominated by manual effort that has nothing to do with making better investment decisions. <strong>Research, analysis, reporting, compliance</strong> — all done by hand, across fragmented tools, using junior analyst hours that cost as much as a Series A.</p>
+      <p>The tools that could fix this — Rogo (<span class="ph">$750M valuation</span>), Hebbia (<span class="ph">$159M raised</span>), AlphaSense — cost <span class="ph">€100–200K per year</span>. They are built for US bulge-bracket banks, not European mid-market funds.</p>
+      <p>The other <strong>99.9% of the European fund universe</strong> gets nothing. They copy-paste into ChatGPT. They read Bloomberg manually. They write LP reports from scratch every quarter. They miss things.</p>
+      <p>Argus eliminates every workflow that does not require human judgement — across the entire investment lifecycle.</p>
+    </div>
+    <div>
+      <div class="mtbl rv d1">
+        <div class="mth"><div class="mthc mono">Time</div><div class="mthc mono">What happens every morning</div></div>
+        <div class="mtr"><div class="mtr-t mono">08:00</div><div class="mtr-a">Bloomberg: overnight moves on 18 positions</div></div>
+        <div class="mtr"><div class="mtr-t mono">08:20</div><div class="mtr-a">Reads earnings release filed post-close</div></div>
+        <div class="mtr"><div class="mtr-t mono">08:50</div><div class="mtr-a">Scans macro news for sector exposures</div></div>
+        <div class="mtr"><div class="mtr-t mono">09:15</div><div class="mtr-a">Checks AFM filings for monitored name</div></div>
+        <div class="mtr"><div class="mtr-t mono">09:30</div><div class="mtr-a">Reads analyst notes received overnight</div></div>
+        <div class="mtr"><div class="mtr-t mono">10:00</div><div class="mtr-a">Reviews watchlist — entries? Theses broken?</div></div>
+        <div class="mtr"><div class="mtr-t mono">11:00</div><div class="mtr-a">  First investment decision of the day</div></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi rv d2">
+          <div class="kpi-n disp">40<sup>+h</sup></div>
+          <div class="kpi-l">Weekly hours wasted across 7 manual workflows for a 3-person investment team — before decisions begin.</div>
+        </div>
+        <div class="kpi rv d3">
+          <div class="kpi-n disp">€200<sup>K+</sup></div>
+          <div class="kpi-l">Annual equivalent analyst cost of manual workflow overhead. Argus replaces it at 15–20% of the price.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM — 8 MODULES -->
+<section class="sec bg1" id="platform" style="border-top:1px solid var(--bdr)">
+  <div class="tag rv">The platform</div>
+  <h2 class="sh2 disp rv d1">8 modules. 1 platform.<br>The entire investment <em>lifecycle.</em></h2>
+  <p class="sp rv d2">Each module is individually valuable. Together they create switching costs so deep that replacing Argus means rebuilding your entire operational infrastructure.</p>
+
+  <!-- Module Grid -->
+  <div class="modules-grid rv d2" id="modGrid">
+    <div class="mod-card active" onclick="showMod(0,this)">
+      <div class="mod-num mono">01</div>
+      
+      <div class="mod-title disp">Morning Intelligence</div>
+      <div class="mod-desc">Daily 07:00 portfolio briefing — proactive, no prompt, fully cited</div>
+    </div>
+    <div class="mod-card" onclick="showMod(1,this)">
+      <div class="mod-num mono">02</div>
+      
+      <div class="mod-title disp">CIM Intelligence</div>
+      <div class="mod-desc">80-page CIM → structured deal brief in 3 minutes</div>
+    </div>
+    <div class="mod-card" onclick="showMod(2,this)">
+      <div class="mod-num mono">03</div>
+      
+      <div class="mod-title disp">Financial Analyser</div>
+      <div class="mod-desc">Upload Excel/PDF → normalised ratios, peer benchmarks</div>
+    </div>
+    <div class="mod-card" onclick="showMod(3,this)">
+      <div class="mod-num mono">04</div>
+      
+      <div class="mod-title disp">IC Memo Writer</div>
+      <div class="mod-desc">CIM + thesis → complete first-draft IC memorandum</div>
+    </div>
+    <div class="mod-card" onclick="showMod(4,this)">
+      <div class="mod-num mono">05</div>
+      
+      <div class="mod-title disp">Covenant Monitor</div>
+      <div class="mod-desc">Auto-calculate all covenants, predict breach months ahead</div>
+    </div>
+    <div class="mod-card" onclick="showMod(5,this)">
+      <div class="mod-num mono">06</div>
+      
+      <div class="mod-title disp">LP Reporting</div>
+      <div class="mod-desc">Quarterly LP reports in 2 hours, not 3 days</div>
+    </div>
+    <div class="mod-card" onclick="showMod(6,this)">
+      <div class="mod-num mono">07</div>
+      
+      <div class="mod-title disp">Regulatory Suite</div>
+      <div class="mod-desc">SFDR, AIFMD, MiFID III — automated compliance reporting</div>
+    </div>
+    <div class="mod-card" onclick="showMod(7,this)">
+      <div class="mod-num mono">08</div>
+      
+      <div class="mod-title disp">Deal Sourcing AI</div>
+      <div class="mod-desc">Proactive target screening from 500K+ European companies</div>
+    </div>
+  </div>
+
+  <!-- MODULE PANELS (one per module) -->
+
+  <!-- 01 Morning Intelligence -->
+  <div class="mod-panel on" id="mp0">
+    <div class="mpd">
+      <h3 class="mpd-h disp">A fully-briefed morning.<br><em>Every single day.</em></h3>
+      <p class="mpd-p">At 07:00, Argus delivers a structured briefing covering everything relevant to your portfolio from the past 24 hours. Not raw data — reasoned, prioritised, cited intelligence written for the way a portfolio manager thinks.</p>
+      <p class="mpd-p">Argus works from 22:00 to 06:55 overnight — monitoring 340+ sources, synthesising across markets, and deciding what actually matters for your specific book.</p>
+      <ul class="feat-list">
+        <li>Portfolio positions: earnings, filings, analyst revisions, management changes — assessed against your thesis</li>
+        <li>Watchlist triggers: price moves, volume anomalies, entry conditions flagged automatically</li>
+        <li>Macro context: ECB, PMI, CPI, sector rotation — filtered for your specific exposure</li>
+        <li>Thesis monitoring: proactive flags when events challenge or support your investment case</li>
+        <li>Priority action list: what needs a decision today, what can wait</li>
+        <li>Every claim cited to its primary source — nothing unverifiable</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="mock">
+        <div class="mock-bar"><div class="mock-dots"><span></span><span></span><span></span></div><div class="mock-lbl mono">argus — morning briefing</div><div class="mock-st"><span class="mock-std"></span>07:00 CET</div></div>
+        <div class="mock-body">
+          <div class="tts mono">TUESDAY · 7 APR 2026 · 07:00 CET</div>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:15px;color:rgba(255,255,255,.88);margin-bottom:16px;line-height:1.4">Good morning. 3 items require your attention today.</div>
+          <div class="mr mono">Portfolio — Overnight</div>
+          <div class="mrow g"><div class="mk mono">ASML</div><div class="mi"><div class="mc u mono">+3.2% pre-market</div><div class="mt">Q1 beat consensus by 8%. EUV order intake €4.2B vs €3.8B exp. Approaching your trim level of €780 — consider reducing 2% position today.</div></div></div>
+          <div class="mrow r"><div class="mk mono">DSM</div><div class="mi"><div class="mc d mono">−1.8% pre-market</div><div class="mt">FY26 EBITDA guidance cut 12%. Nutrition segment miss. Directly contradicts your Q2 recovery thesis. Review before open.</div></div></div>
+          <div class="mr mono">Watchlist — Opportunity</div>
+          <div class="mrow a"><div class="mk mono">ADYEN</div><div class="mi"><div class="mc n mono">Entry zone: €1,138</div><div class="mt">Pulled to €1,138 — inside your target range €1,100–1,150. No negative catalysts. Thesis intact. Entry opportunity.</div></div></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.06);margin-top:10px">
+            <div style="padding:8px 12px;border-right:1px solid rgba(255,255,255,.06)"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px">ECB</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.7)">3.40%  <span style="color:var(--amber)">14:00</span></div></div>
+            <div style="padding:8px 12px;border-right:1px solid rgba(255,255,255,.06)"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px">EUR/USD</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.7)">1.0842  <span style="color:#28C840">+0.1%</span></div></div>
+            <div style="padding:8px 12px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px">DE 10Y</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.7)">2.41%  <span style="color:#F05252">−3bps</span></div></div>
+          </div>
+          <div class="mprio" style="margin-top:12px"><div class="mprio-l mono">Priority for today</div><div class="mprio-t">1. Review DSM — thesis breach likely  ·  2. Adyen: entry conditions met  ·  3. ASML: set trim alert €780  ·  4. ECB 14:00</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 CIM Intelligence -->
+  <div class="mod-panel" id="mp1">
+    <div class="mpd">
+      <h3 class="mpd-h disp">80-page CIM →<br><em>3-minute deal brief.</em></h3>
+      <p class="mpd-p">Upload any Confidential Information Memorandum and Argus returns a complete structured deal brief — financials extracted, red flags identified, DD questions generated — in under 3 minutes.</p>
+      <p class="mpd-p">What a junior analyst produces in 2 days, Argus produces before your next meeting.</p>
+      <ul class="feat-list">
+        <li>Financial extraction: revenue, EBITDA, margins, cash flow, working capital — normalised to IFRS/HGB</li>
+        <li>Automatic comparable transaction search from European M&A database</li>
+        <li>Red flag identification: footnote anomalies, related-party transactions, revenue concentration</li>
+        <li>15–20 targeted due diligence questions generated for management meeting</li>
+        <li>Customer concentration analysis, management team assessment, market position summary</li>
+        <li>Output structured for immediate IC memo population</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="mock">
+        <div class="mock-bar"><div class="mock-dots"><span></span><span></span><span></span></div><div class="mock-lbl mono">argus — CIM intelligence</div><div class="mock-st"><span class="mock-std"></span>Processing</div></div>
+        <div class="mock-body">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.1em;margin-bottom:12px">TARGET: DUTCH MANUFACTURING CO. — CIM (84 pages)</div>
+          <div class="cim-step">
+            <div class="cim-idx">1</div>
+            <div>
+              <div class="cim-head mono">Financial summary extracted</div>
+              <div class="cim-val">Revenue €42.3M (+11% YoY) · EBITDA €8.1M (19.2% margin) · Net debt €18.4M · DSCR 1.65x</div>
+            </div>
+          </div>
+          <div class="cim-step">
+            <div class="cim-idx">2</div>
+            <div>
+              <div class="cim-head mono">Red flags identified</div>
+              <div class="cim-val">Top 3 customers = 68% of revenue (concentration risk)</div>
+              <div class="cim-flag"> Revenue concentration above 60% threshold</div>
+            </div>
+          </div>
+          <div class="cim-step">
+            <div class="cim-idx">3</div>
+            <div>
+              <div class="cim-head mono">Comparable transactions</div>
+              <div class="cim-val">7 comparable EU manufacturing deals (2022–2025): median EV/EBITDA 7.8x · Range 6.2–9.4x</div>
+            </div>
+          </div>
+          <div class="cim-step">
+            <div class="cim-idx">4</div>
+            <div>
+              <div class="cim-head mono">Due diligence questions generated</div>
+              <div class="cim-val">1. Customer 1 contract renewal terms and exclusivity provisions?<br>2. Q4 EBITDA decline from 21% → 18% — working capital or structural?<br>3. Management rollover expectations for retention of top 3 customer relationships</div>
+            </div>
+          </div>
+          <div style="background:rgba(16,194,122,.06);border:1px solid rgba(16,194,122,.2);padding:10px 13px;margin-top:10px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">Completed in 2m 48s — ready for IC memo population</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5)">Indicative valuation: €52–63M (6.5–7.8x EBITDA) based on 7 European comparables</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 Financial Analyser -->
+  <div class="mod-panel" id="mp2">
+    <div class="mpd">
+      <h3 class="mpd-h disp">Upload Excel or PDF.<br><em>Get instant analysis.</em></h3>
+      <p class="mpd-p">Management accounts, board packs, financial models — upload any format. Argus normalises figures to a standard taxonomy, calculates every relevant ratio, detects anomalies, and benchmarks against sector peers.</p>
+      <ul class="feat-list">
+        <li>Handles messy, non-standard Excel structures — not just clean templates</li>
+        <li>Automatic IFRS/HGB reconciliation across portfolio companies</li>
+        <li>Covenant calculation against uploaded loan documentation</li>
+        <li>Time-series analysis: trend identification across 8+ quarters</li>
+        <li>Anomaly detection: figures deviating significantly from trend or peer benchmark flagged</li>
+        <li>Sector peer benchmarks: 15 European peers auto-selected based on industry and size</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="chat-body" style="background:var(--navy4);border:1px solid var(--bdr2)">
+        <div style="background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.05);padding:10px 15px;display:flex;align-items:center;justify-content:space-between">
+          <div class="mock-dots"><span></span><span></span><span></span></div>
+          <div class="mock-lbl mono">argus — financial analyser</div>
+          <div class="mock-st"><span class="mock-std"></span>Online</div>
+        </div>
+        <div style="padding:16px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.1em;margin-bottom:12px">PORTFOLIO CO. — Q4 2025 MANAGEMENT ACCOUNTS</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(255,255,255,.06);margin-bottom:12px">
+            <div style="padding:10px 12px;border-right:1px solid rgba(255,255,255,.06)"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Revenue</div><div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:rgba(255,255,255,.8)">€42.3M</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#28C840">+11% YoY</div></div>
+            <div style="padding:10px 12px;border-right:1px solid rgba(255,255,255,.06)"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">EBITDA Margin</div><div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:rgba(255,255,255,.8)">19.2%</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#F05252">vs 21% Q3</div></div>
+            <div style="padding:10px 12px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Net Leverage</div><div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:rgba(255,255,255,.8)">2.3x</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#28C840">vs 3.0x covenant</div></div>
+          </div>
+          <div style="background:rgba(254,188,46,.06);border:1px solid rgba(254,188,46,.2);padding:10px 12px;margin-bottom:10px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#FEBC2E;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Anomaly detected</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6)">EBITDA margin contracted 190bps QoQ to 19.2% — below 4-quarter average of 20.6%. Labour cost increase of 8% not reflected in pricing. Flag for management call.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid rgba(255,255,255,.06)">
+            <div style="padding:10px 12px;border-right:1px solid rgba(255,255,255,.06)"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">vs Sector Peers (median)</div><div style="font-size:13px;color:rgba(255,255,255,.7)">EBITDA Margin: <span style="color:#FEBC2E">−1.4pts below</span> sector</div></div>
+            <div style="padding:10px 12px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Normalised (IFRS)</div><div style="font-size:13px;color:rgba(255,255,255,.7)">Lease adjustments: <span style="color:#28C840">+€0.8M EBITDA</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 IC Memo Writer -->
+  <div class="mod-panel" id="mp3">
+    <div class="mpd">
+      <h3 class="mpd-h disp">CIM + thesis →<br><em>First-draft IC memo.</em></h3>
+      <p class="mpd-p">After CIM analysis and financial model review, input your investment thesis and key assumptions. Argus produces a complete first-draft IC memorandum — market, financials, thesis, risks, structure, returns.</p>
+      <p class="mpd-p">Partners review, challenge, and approve. First drafts are eliminated as a concept.</p>
+      <ul class="feat-list">
+        <li>Integrates CIM data, financial analysis, and market research automatically — no re-entry</li>
+        <li>Consistent structure across all IC memos — no analyst style variation</li>
+        <li>Returns analysis at entry multiple, debt structure, and exit assumptions defined by user</li>
+        <li>Risk section with mitigants, automatically surfaced from CIM red flags</li>
+        <li>All claims cited to primary source — IC committees can verify everything</li>
+        <li>Time saving: 3–5 analyst-days per deal → 3–4 hours with Argus</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="mock">
+        <div class="mock-bar"><div class="mock-dots"><span></span><span></span><span></span></div><div class="mock-lbl mono">argus — IC memo writer</div><div class="mock-st"><span class="mock-std"></span>Drafting</div></div>
+        <div class="mock-body">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.1em;margin-bottom:14px">INVESTMENT COMMITTEE MEMORANDUM — DRAFT v1.0</div>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:15px;font-weight:600;color:rgba(255,255,255,.9);margin-bottom:6px">Dutch Manufacturing Co. — Proposed Acquisition</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,.3);margin-bottom:14px">Entry: €55M EV  ·  7x EV/EBITDA  ·  45% Equity / 55% Debt  ·  Target IRR: 22%</div>
+          <div style="border-left:2px solid var(--amber);padding-left:12px;margin-bottom:12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Investment Thesis</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.65);line-height:1.65">Dutch Manufacturing Co. operates as a vertically integrated precision engineering business with defensible market position in industrial automation components. We believe the company can grow EBITDA from €8.1M to €13.5M by 2029 through pricing power restoration (margin recovery from 19% → 23%) and selective geographic expansion into DACH markets...</div>
+          </div>
+          <div style="border-left:2px solid #F05252;padding-left:12px;margin-bottom:12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#F05252;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Key Risks</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.65">Customer concentration (68% top 3) presents key-man revenue risk. Mitigant: Contractual lock-ins with two of three key accounts (4-year terms). Third account re-negotiation scheduled Q3 2026...</div>
+          </div>
+          <div style="background:rgba(16,194,122,.06);border:1px solid rgba(16,194,122,.2);padding:9px 12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Returns summary (base case)</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6)">Exit 2029 at 8.5x EV/EBITDA → MoIC 2.8x  ·  IRR 22.4%  ·  Cash-on-cash 2.8x</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 Covenant Monitor -->
+  <div class="mod-panel" id="mp4">
+    <div class="mpd">
+      <h3 class="mpd-h disp">Covenant breaches predicted<br><em>months in advance.</em></h3>
+      <p class="mpd-p">When management accounts arrive, Argus extracts key figures, calculates all covenants against your loan documentation, and updates the dashboard automatically. Breach risk is flagged months ahead — not discovered at the quarterly review.</p>
+      <ul class="feat-list">
+        <li>All standard covenant types: DSCR, net leverage, interest coverage, minimum liquidity, capex</li>
+        <li>Trend projection: if current deterioration continues, when does breach occur?</li>
+        <li>Automatic alert in morning briefing when headroom drops below defined threshold</li>
+        <li>Every calculation sourced and documented — audit-ready for investor reporting</li>
+        <li>Quarterly time saving: 1–2 days → 20 minutes per portfolio company</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="mock">
+        <div class="mock-bar"><div class="mock-dots"><span></span><span></span><span></span></div><div class="mock-lbl mono">argus — covenant dashboard</div><div class="mock-st"><span class="mock-std"></span>Q4 2025</div></div>
+        <div>
+          <div class="cov-row cov-hdr">
+            <div class="cov-lbl mono">Covenant</div>
+            <div class="cov-lbl mono">Current</div>
+            <div class="cov-lbl mono">Threshold</div>
+            <div class="cov-lbl mono">Headroom</div>
+            <div class="cov-lbl mono">Status</div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-val">DSCR</div>
+            <div class="cov-val cov-warn">1.42x</div>
+            <div class="cov-val">1.25x min</div>
+            <div class="cov-val cov-warn">0.17x</div>
+            <div><span class="cov-badge warn mono">Watch</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-val">Net Leverage</div>
+            <div class="cov-val cov-ok">4.1x</div>
+            <div class="cov-val">5.0x max</div>
+            <div class="cov-val cov-ok">0.9x</div>
+            <div><span class="cov-badge ok mono"> OK</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-val">Interest Cover</div>
+            <div class="cov-val cov-ok">3.2x</div>
+            <div class="cov-val">2.5x min</div>
+            <div class="cov-val cov-ok">0.7x</div>
+            <div><span class="cov-badge ok mono"> OK</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-val">Min Liquidity</div>
+            <div class="cov-val cov-ok">€8.2M</div>
+            <div class="cov-val">€5.0M min</div>
+            <div class="cov-val cov-ok">€3.2M</div>
+            <div><span class="cov-badge ok mono"> OK</span></div>
+          </div>
+        </div>
+        <div class="breach-alert">
+          <div class="ba-l mono">DSCR Breach Prediction</div>
+          <div class="ba-t">At current quarterly deterioration of −0.19x, DSCR is projected to reach 1.25x covenant threshold in <strong style="color:#F05252">Q3 2026</strong> — 2 quarters from now. Recommend management discussion at next board meeting.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 LP Reporting -->
+  <div class="mod-panel" id="mp5">
+    <div class="mpd">
+      <h3 class="mpd-h disp">Quarterly LP reports.<br><em>2 hours, not 3 days.</em></h3>
+      <p class="mpd-p">Argus generates a complete first-draft quarterly LP report in under 2 hours — narrative update per portfolio company, fund performance attribution, market context, outlook. The PM reads, refines, and approves.</p>
+      <ul class="feat-list">
+        <li>Personalised per LP — tracks each investor's specific reporting preferences and KPI focus</li>
+        <li>Narrative auto-populated from covenant monitoring and portfolio tracking data</li>
+        <li>Consistent, professional tone across all companies — no analyst style variation</li>
+        <li>Every claim sourced to management accounts or market data — fully verifiable</li>
+        <li>Time saving: 3–4 PM days → 2 hours per quarter</li>
+        <li>Annual saving: €15,000+ in PM time at €200/hour</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="mock">
+        <div class="mock-bar"><div class="mock-dots"><span></span><span></span><span></span></div><div class="mock-lbl mono">argus — Q4 2025 LP report draft</div><div class="mock-st"><span class="mock-std"></span>Draft ready</div></div>
+        <div>
+          <div class="lp-section">
+            <div class="lp-company mono">Dutch Manufacturing Co. — Portfolio Company Update</div>
+            <div class="lp-narrative">Dutch Manufacturing delivered Q4 revenue of €11.2M (+9% vs Q4 2024), in line with full-year guidance of €42.3M. EBITDA margin contracted 190bps to 19.2%, reflecting above-forecast labour cost inflation partially offset by volume leverage. Management has implemented a price increase effective 1 February that is expected to restore margins to the 20–21% range in H1 2026. The company remains well within covenant headroom on all facilities. Top 3 customer relationships remain intact; contract renewals with Customer 2 and Customer 3 (representing 41% of revenue combined) were completed in Q4 on terms consistent with previous agreements.</div>
+            <div class="lp-kpis">
+              <div class="lp-kpi"><div class="lp-kpi-v">€42.3M</div><div class="lp-kpi-l mono">FY25 Revenue</div></div>
+              <div class="lp-kpi"><div class="lp-kpi-v">19.2%</div><div class="lp-kpi-l mono">EBITDA Margin</div></div>
+              <div class="lp-kpi"><div class="lp-kpi-v">4.1x</div><div class="lp-kpi-l mono">Net Leverage</div></div>
+            </div>
+          </div>
+          <div style="background:rgba(184,130,30,.06);border-top:1px solid rgba(184,130,30,.2);padding:10px 14px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">AI-generated first draft — review before sending</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.4)">All figures sourced to Q4 2025 Management Accounts (Jan 2026). 3 further portfolio companies queued.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 Regulatory Suite -->
+  <div class="mod-panel" id="mp6">
+    <div class="mpd">
+      <h3 class="mpd-h disp">Compliance automation.<br><em>€50–200K saved annually.</em></h3>
+      <p class="mpd-p">European funds face increasing compliance overhead — SFDR, AIFMD, MiFID III. Argus automates the data collection and first-draft generation for all major European regulatory requirements.</p>
+      <ul class="feat-list">
+        <li>SFDR PAI indicators — auto-collected and auto-reported for all portfolio companies</li>
+        <li>Article 6/8/9 classification monitoring — continuous, with change alerts</li>
+        <li>AIFMD leveraged reporting — calculated automatically from portfolio data</li>
+        <li>MiFID III transaction cost reporting — automated compilation</li>
+        <li>AFM, BaFin, AMF compliance monitoring — live filing alerts and document parsing</li>
+        <li>Replaces €50,000–€200,000/year in annual compliance advisory costs</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="ds-card">
+        <div class="ds-top"><span class="mono">Regulatory integrations — ALL CONNECTED</span><span class="mono" style="color:var(--green);font-size:9px;letter-spacing:.1em">● LIVE</span></div>
+        <div class="ds-row"><div class="ds-l"><div class="ds-flag">NL</div><div><div class="ds-name">AFM</div><div class="ds-sub mono">Netherlands Authority for Financial Markets</div></div></div><div class="ds-r"><span class="dbadge db-live mono">Live</span><span class="dbadge db-nat mono">Native</span></div></div>
+        <div class="ds-row"><div class="ds-l"><div class="ds-flag">DE</div><div><div class="ds-name">BaFin</div><div class="ds-sub mono">German Federal Financial Supervisory Authority</div></div></div><div class="ds-r"><span class="dbadge db-live mono">Live</span><span class="dbadge db-nat mono">Native</span></div></div>
+        <div class="ds-row"><div class="ds-l"><div class="ds-flag">FR</div><div><div class="ds-name">AMF</div><div class="ds-sub mono">Autorité des marchés financiers</div></div></div><div class="ds-r"><span class="dbadge db-live mono">Live</span><span class="dbadge db-nat mono">Native</span></div></div>
+        <div class="ds-row"><div class="ds-l"><div class="ds-flag">EU</div><div><div class="ds-name">SFDR Monitor</div><div class="ds-sub mono">Article 6/8/9 · PAI indicators · Auto-classification</div></div></div><div class="ds-r"><span class="dbadge db-rt mono">Auto-tagged</span><span class="dbadge db-nat mono">Native</span></div></div>
+        <div class="ds-row"><div class="ds-l"><div class="ds-flag">EU</div><div><div class="ds-name">AIFMD Reporting</div><div class="ds-sub mono">Leveraged reporting · Liquidity risk · Risk exposure</div></div></div><div class="ds-r"><span class="dbadge db-live mono">Live</span></div></div>
+        <div class="ds-row" style="border-bottom:none"><div class="ds-l"><div class="ds-flag">—</div><div><div class="ds-name">IFRS / HGB Normaliser</div><div class="ds-sub mono">Cross-standard financial reconciliation</div></div></div><div class="ds-r"><span class="dbadge db-nat mono">Native</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 Deal Sourcing -->
+  <div class="mod-panel" id="mp7">
+    <div class="mpd">
+      <h3 class="mpd-h disp">Proactive deal flow.<br><em>No database to search.</em></h3>
+      <p class="mpd-p">Define your acquisition criteria — sector, geography, size, ownership structure, financial profile — and Argus continuously scans 500,000+ European SMEs to surface matches proactively in your morning briefing.</p>
+      <ul class="feat-list">
+        <li>500,000+ European SMEs monitored continuously across KvK, Handelsregister, Orbis, news</li>
+        <li>Management change alerts — leadership transitions signal potential deal timing</li>
+        <li>Succession indicators — family business ownership change signals</li>
+        <li>Debt refinancing alerts — potential LBO timing window signals</li>
+        <li>Revenue growth triggers — companies crossing your minimum threshold flagged</li>
+        <li>New matches delivered in morning briefing — no additional effort from the team</li>
+      </ul>
+    </div>
+    <div class="mpm">
+      <div class="mock">
+        <div class="mock-bar"><div class="mock-dots"><span></span><span></span><span></span></div><div class="mock-lbl mono">argus — deal sourcing</div><div class="mock-st"><span class="mock-std"></span>3 new matches</div></div>
+        <div class="mock-body">
+          <div class="tts mono">CRITERIA: NL/BE MANUFACTURING · €10–50M REV · FAMILY-OWNED · EBITDA MARGIN &gt;15%</div>
+          <div style="margin-top:12px">
+            <div style="background:rgba(184,130,30,.06);border:1px solid rgba(184,130,30,.2);padding:11px 13px;margin-bottom:8px">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.8);font-weight:500">Precision Components BV (Eindhoven)</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--amber);padding:2px 8px;background:rgba(184,130,30,.15)">HIGH MATCH</div>
+              </div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:6px">Revenue €22M · EBITDA est. 18% · Family-owned, 2nd generation · KvK #08123456</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber)">Trigger: CEO retirement announcement (April 2026) — succession signal</div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:11px 13px;margin-bottom:8px">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.8);font-weight:500">Metaal Industrie NV (Antwerpen)</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green);padding:2px 8px;background:rgba(16,194,122,.1)">STRONG MATCH</div>
+              </div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:6px">Revenue €31M · EBITDA est. 16% · Founder-owned · Banque du Bruxelles registrant</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--green)">Trigger: Refinancing €12M senior facility — bank mandate likely Q3 2026</div>
+            </div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px">498,231 companies monitored · Last scan: 06:48 CET · Next scan: tonight 22:00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROI CALCULATOR -->
+<section class="sec bg2" style="border-top:1px solid var(--bdr)">
+  <div class="tag rv">ROI calculator</div>
+  <h2 class="sh2 disp rv d1">Calculate your savings.<br><em>The math is simple.</em></h2>
+  <p class="sp rv d2">Argus at €999/month costs less than 15% of a junior analyst's annual salary — and covers 7 workflows they currently do manually.</p>
+  <div class="roi-box rv d2">
+    <div class="roi-header">
+      <div class="roi-icon">ROI</div>
+      <div>
+        <div class="roi-hl disp">Your ROI estimate</div>
+        <div class="roi-hs">Adjust sliders to match your team</div>
+      </div>
+    </div>
+    <div class="roi-body">
+      <div class="roi-sliders">
+        <div>
+          <label class="roi-lbl mono">Investment professionals</label>
+          <input type="range" class="roi-slider" id="rp" min="1" max="10" value="3" oninput="calcROI()">
+          <div class="roi-val disp"><span id="rpv">3</span> <span>people</span></div>
+        </div>
+        <div>
+          <label class="roi-lbl mono">Daily research overhead (hours)</label>
+          <input type="range" class="roi-slider" id="rh" min="1" max="5" value="3" step="0.5" oninput="calcROI()">
+          <div class="roi-val disp"><span id="rhv">3</span> <span>hours / day</span></div>
+        </div>
+      </div>
+      <div class="roi-results">
+        <div class="roi-r"><div class="roi-r-lbl mono">Hours saved / week</div><div class="roi-r-val disp" id="rh-r">45h</div><div class="roi-r-sub">Per team, per week</div></div>
+        <div class="roi-r"><div class="roi-r-lbl mono">Analyst cost saved / year</div><div class="roi-r-val disp" id="rc-r">€108K</div><div class="roi-r-sub">vs. hiring junior analyst</div></div>
+        <div class="roi-r hi"><div class="roi-r-lbl mono">Payback period</div><div class="roi-r-val disp" id="rp-r">11 days</div><div class="roi-r-sub">At €999/month</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="sec bg1" style="border-top:1px solid var(--bdr)">
+  <div class="tag rv">Competitive landscape</div>
+  <h2 class="sh2 disp rv d1">The gap nobody else is filling.<br><em>Until now.</em></h2>
+  <p class="sp rv d2">Rogo raised $165M. Hebbia $159M. Every dollar serves bulge-bracket banks at €100–200K/year. Argus serves the other 99.9%.</p>
+  <div class="ctbl rv d2">
+    <div class="crow"><div class="cc hdr">Feature</div><div class="cc hdr a"> Argus</div><div class="cc hdr">Rogo ($750M)</div><div class="cc hdr">Hebbia ($159M)</div><div class="cc hdr">AlphaSense</div><div class="cc hdr">Auquan</div></div>
+    <div class="crow"><div class="cc">Price under €30K/year</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div></div>
+    <div class="crow"><div class="cc">Proactive — no prompting</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div></div>
+    <div class="crow"><div class="cc">Full lifecycle (8 modules)</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="im">~</span></div></div>
+    <div class="crow"><div class="cc">European regulatory native</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="im">~</span></div><div class="cc"><span class="im">~</span></div></div>
+    <div class="crow"><div class="cc">CIM intelligence</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="iy"></span></div></div>
+    <div class="crow"><div class="cc">LP reporting automation</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="im">~</span></div></div>
+    <div class="crow"><div class="cc">Deal sourcing AI</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div></div>
+    <div class="crow"><div class="cc">SFDR / AIFMD native</div><div class="cc ag"><span class="iy"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div><div class="cc"><span class="in"></span></div></div>
+  </div>
+  <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:14px;letter-spacing:.04em" class="rv d3"> Full native  ·  ~ Partial / add-on  ·   Not available</p>
+</section>
+
+<!-- PRICING -->
+<section class="sec bg2" id="pricing" style="border-top:1px solid var(--bdr)">
+  <div class="tag rv">Pricing</div>
+  <h2 class="sh2 disp rv d1">Less than one analyst hour.<br><em>Per day.</em></h2>
+  <p class="sp rv d2">At €999/month, Argus costs less than 15% of a junior analyst's annual salary — and replaces 7 workflows they currently do by hand.</p>
+  <div class="pg rv d2">
+    <div class="pc">
+      <div class="pc-tier mono">Starter</div>
+      <div class="pc-price disp">€999<span>/mo</span></div>
+      <div class="pc-per mono">Billed annually · €11,988/yr</div>
+      <ul class="pc-ul">
+        <li>Morning Intelligence (daily briefing)</li>
+        <li>Up to 15 portfolio positions</li>
+        <li>10 watchlist companies</li>
+        <li>On-demand research agent</li>
+        <li>Email + web dashboard</li>
+        <li class="dim">CIM Intelligence</li>
+        <li class="dim">Financial Analyser</li>
+      </ul>
+      <button class="pc-btn mono" onclick="goTo('waitlist')">Join waitlist</button>
+    </div>
+    <div class="pc hot">
+      <div class="pc-badge mono">Most popular</div>
+      <div class="pc-tier mono">Professional</div>
+      <div class="pc-price disp">€1,999<span>/mo</span></div>
+      <div class="pc-per mono">Billed annually · €23,988/yr</div>
+      <ul class="pc-ul">
+        <li>Everything in Starter</li>
+        <li>Unlimited positions & watchlist</li>
+        <li>EU regulatory depth (AFM, BaFin, AMF)</li>
+        <li>SFDR classification monitoring</li>
+        <li>IFRS / HGB normalisation</li>
+        <li>3 user seats</li>
+        <li class="dim">CIM Intelligence & IC Memo Writer</li>
+      </ul>
+      <button class="pc-btn mono" onclick="goTo('waitlist')">Join waitlist</button>
+    </div>
+    <div class="pc">
+      <div class="pc-tier mono">Platform</div>
+      <div class="pc-price disp">€3,499<span>/mo</span></div>
+      <div class="pc-per mono">Billed annually · €41,988/yr</div>
+      <ul class="pc-ul">
+        <li>Everything in Professional</li>
+        <li>CIM Intelligence Engine</li>
+        <li>Financial Model Analyser</li>
+        <li>IC Memo Co-Writer</li>
+        <li>Covenant Monitor</li>
+        <li>8 user seats</li>
+        <li class="dim">LP Reporting & Deal Sourcing</li>
+      </ul>
+      <button class="pc-btn mono" onclick="goTo('waitlist')">Join waitlist</button>
+    </div>
+    <div class="pc">
+      <div class="pc-tier mono">Enterprise</div>
+      <div class="pc-price disp" style="font-size:32px">Custom</div>
+      <div class="pc-per mono">€60,000+/year</div>
+      <ul class="pc-ul">
+        <li>Everything in Platform</li>
+        <li>LP Reporting Automation</li>
+        <li>Deal Sourcing AI</li>
+        <li>Regulatory Suite (SFDR, AIFMD)</li>
+        <li>Unlimited seats</li>
+        <li>Dedicated onboarding & SLA</li>
+        <li>Custom integrations</li>
+      </ul>
+      <button class="pc-btn mono" onclick="goTo('waitlist')">Contact us</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec bg1" id="faq" style="border-top:1px solid var(--bdr)">
+  <div class="tag rv">Frequently asked questions</div>
+  <h2 class="sh2 disp rv d1" style="max-width:460px">Everything you<br>need to <em>know.</em></h2>
+  <div class="faq rv d2">
+    <div class="faq-item open">
+      <div class="faq-q" onclick="toggleFAQ(this)"><span class="faq-qt disp">How is Argus different from Rogo or ChatGPT?</span><span class="faq-ic">+</span></div>
+      <div class="faq-a"><p>Rogo and ChatGPT are reactive — you ask, they answer. Argus is proactive: it works overnight without prompting and delivers analysis before you know to ask. Beyond this, Argus covers 8 integrated workflows across the full investment lifecycle, is priced for mid-market funds (not bulge-bracket banks), and is built natively for European regulatory standards. Rogo costs €100–200K per year and serves US banks. Argus starts at €999 per month and serves European funds.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)"><span class="faq-qt disp">Can I trust AI-generated research for investment decisions?</span><span class="faq-ic">+</span></div>
+      <div class="faq-a"><p>Every claim in every Argus output is cited to its primary source — management accounts, regulatory filings, exchange announcements, analyst reports. You can verify anything in seconds. Argus is designed to give you the full information picture, not to replace your judgement. Investment professionals who use Argus describe it as having a well-prepared analyst who read everything overnight and flagged what matters.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)"><span class="faq-qt disp">How does Argus know what matters for my portfolio?</span><span class="faq-ic">+</span></div>
+      <div class="faq-a"><p>During onboarding, you configure your portfolio positions, watchlist, investment theses, and key risk factors. Argus maintains persistent memory of this context — including your entry/exit levels, thesis assumptions, and covenant thresholds. Every briefing and every research answer is filtered through this specific lens. The longer you use Argus, the more it understands what matters to you.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)"><span class="faq-qt disp">What European regulatory sources does Argus cover?</span><span class="faq-ic">+</span></div>
+      <div class="faq-a"><p>Argus natively integrates AFM (Netherlands), BaFin (Germany), and AMF (France) filings with live alerts and document parsing. It also covers SFDR Article 6/8/9 classification monitoring, AIFMD reporting, KvK and pan-European company registries, and Euronext real-time exchange filings. Financial data is normalised across IFRS and HGB reporting standards. Document processing works in Dutch, German, French, and English.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)"><span class="faq-qt disp">How long does onboarding take?</span><span class="faq-ic">+</span></div>
+      <div class="faq-a"><p>Configuration takes 20–30 minutes. You input your portfolio positions, watchlist companies, and key investment theses. Argus delivers its first morning briefing the following morning at 07:00. No IT involvement required, no enterprise procurement — you sign up, configure, and you are live the next day.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)"><span class="faq-qt disp">Is my portfolio data secure?</span><span class="faq-ic">+</span></div>
+      <div class="faq-a"><p>Yes. Your portfolio configuration and research queries are never used to train any model. Data is encrypted in transit and at rest, isolated per customer, and never shared across accounts. Argus is GDPR-compliant, EU-hosted, and designed for institutional financial professionals who handle confidential deal information daily.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)"><span class="faq-qt disp">Does the CIM Intelligence module work with any PDF format?</span><span class="faq-ic">+</span></div>
+      <div class="faq-a"><p>Yes. Argus processes CIMs in any PDF format — including scanned documents, mixed text/image PDFs, and files with complex table structures. The Financial Model Analyser handles Excel files in any format including non-standard layouts. If the document structure is unusual, Argus flags uncertainty rather than returning potentially incorrect figures.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<div class="wl-sec" id="waitlist">
+  <div class="wl-glow"></div>
+  <div class="wl-inner">
+    <div class="tag rv" style="display:inline-flex;margin-bottom:22px">Early access</div>
+    <h2 class="sh2 disp rv d1" style="text-align:center">The window is open.<br><em>Be first.</em></h2>
+    <p class="sp rv d2" style="margin:0 auto;text-align:center">Argus is in closed beta with a select group of European mid-market funds. Join the waitlist for priority access and founding member pricing — locked in permanently.</p>
+    <div class="wl-form rv d2" id="wlform">
+      <input type="email" class="wl-email mono" placeholder="you@yourfund.com" id="wlemail">
+      <button class="wl-btn mono" onclick="submitWL()">Get access →</button>
+    </div>
+    <div class="wl-ok disp" id="wlok">Request received — we'll be in touch within 48 hours.</div>
+    <p class="wl-note mono rv d3" style="margin-top:14px">No commitment · Founding member pricing · Amsterdam-based team</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="logo" style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:.05em;color:var(--text);text-decoration:none;display:block;margin-bottom:14px">ARGUS</a>
+      <p>The operating system for European investment management. 8 integrated modules covering the full investment lifecycle — from deal sourcing to LP reporting — built natively for European regulatory reality.</p>
+    </div>
+    <div>
+      <span class="fc-head mono">Platform</span>
+      <ul class="fc-ul">
+        <li><a href="#platform">Morning Intelligence</a></li>
+        <li><a href="#platform">CIM Intelligence</a></li>
+        <li><a href="#platform">Financial Analyser</a></li>
+        <li><a href="#platform">Covenant Monitor</a></li>
+        <li><a href="#platform">LP Reporting</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="fc-head mono">Company</span>
+      <ul class="fc-ul">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#5b353235341b3a293c2e28753a32">Contact</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="fc-head mono">Get in touch</span>
+      <ul class="fc-ul">
+        <li><a href="/cdn-cgi/l/email-protection#26484f484966475441535508474f"><span class="__cf_email__" data-cfemail="ef81868180af8e9d889a9cc18e86">[email&#160;protected]</span></a></li>
+        <li><a href="#">Amsterdam, Netherlands</a></li>
+      </ul>
+      <div style="margin-top:18px">
+        <button class="pc-btn mono" onclick="goTo('waitlist')" style="width:auto;padding:10px 18px;font-size:10px">Request access →</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bot">
+    <span class="footer-copy mono">© 2026 Argus. All rights reserved.</span>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* NAV */
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('up',scrollY>40));
+
+/* SCROLL */
+function goTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})}
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}
+  });
+});
+
+/* REVEAL */
+const obs=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')});
+},{threshold:0.07});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+/* HERO ANIMATION */
+setTimeout(()=>{
+  document.getElementById('hc').style.display='none';
+  document.getElementById('h1').style.display='block';
+  setTimeout(()=>document.getElementById('h2').style.display='block',700);
+},1100);
+
+/* COUNTDOWN */
+function updateCD(){
+  const now=new Date();
+  const cetOff=60; // UTC+1 base
+  const cetNow=new Date(now.getTime()+cetOff*60000);
+  let target=new Date(Date.UTC(cetNow.getUTCFullYear(),cetNow.getUTCMonth(),cetNow.getUTCDate(),6,0,0));
+  if(cetNow.getUTCHours()>=6)target=new Date(target.getTime()+86400000);
+  const diff=target-now;
+  if(diff<=0){document.getElementById('cd').textContent='07:00 — now';return}
+  const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  document.getElementById('cd').textContent=`${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+}
+updateCD();setInterval(updateCD,1000);
+
+/* MODULE TABS */
+function showMod(i,el){
+  document.querySelectorAll('.mod-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.mod-panel').forEach(p=>{p.classList.remove('on');p.style.display='none'});
+  el.classList.add('active');
+  const panel=document.getElementById('mp'+i);
+  if(panel){panel.classList.add('on');panel.style.display='';}
+}
+// Init — hide all panels except first
+document.querySelectorAll('.mod-panel').forEach((p,i)=>{
+  if(i!==0){p.style.display='none'}
+});
+
+/* FAQ */
+function toggleFAQ(el){
+  const item=el.parentElement;
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+}
+
+/* ROI CALCULATOR */
+function calcROI(){
+  const p=parseFloat(document.getElementById('rp').value);
+  const h=parseFloat(document.getElementById('rh').value);
+  document.getElementById('rpv').textContent=p;
+  document.getElementById('rhv').textContent=h;
+  const hrsWk=Math.round(p*h*5);
+  const analystCost=Math.round(p*(h/8)*80000);
+  const monthlyCost=p<=3?999:p<=6?1999:3499;
+  const monthlyVal=p*(h/8)*80000/12;
+  const payback=Math.max(1,Math.round(monthlyCost/monthlyVal*30));
+  document.getElementById('rh-r').textContent=hrsWk+'h';
+  document.getElementById('rc-r').textContent='€'+Math.round(analystCost/1000)+'K';
+  document.getElementById('rp-r').textContent=payback<30?payback+' days':(Math.round(payback/30))+' months';
+}
+calcROI();
+
+/* WAITLIST */
+function submitWL(){
+  const val=document.getElementById('wlemail').value;
+  if(!val||!val.includes('@')){
+    const inp=document.getElementById('wlemail');
+    inp.style.borderColor='rgba(240,82,82,.5)';
+    inp.placeholder='Please enter a valid email';
+    inp.value='';
+    setTimeout(()=>{inp.style.borderColor='';inp.placeholder='you@yourfund.com'
